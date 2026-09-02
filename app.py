@@ -34,7 +34,8 @@ class OpticalElement:
         denominator = np.dot(v2, perpendicular)
         if abs(denominator) < 1e-8:
             return None
-        distance = np.cross(v2, v1) / denominator
+        cross_product = v2[0] * v1[1] - v2[1] * v1[0]
+        distance = cross_product / denominator
         position = np.dot(v1, perpendicular) / denominator
         if distance > 1e-4 and 0.0 <= position <= 1.0:
             return distance
