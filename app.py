@@ -1,13 +1,9 @@
-import matplotlib.animation as animation
-import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
-import sys
+import streamlit as st
 
-# Détection automatique de l'environnement (Streamlit vs Exécution Standard)
-RUNNING_IN_STREAMLIT = "streamlit" in sys.argv or any("streamlit" in arg for arg in sys.argv)
-
-if RUNNING_IN_STREAMLIT:
-    import streamlit as st
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 
 class Ray:
@@ -115,7 +111,7 @@ class Scene:
                 if isinstance(closest_el, Screen):
                     break
 
-    def generate_animation(self, num_frames=100):
+    def generate_figure(self):
         fig, ax = plt.subplots(figsize=(10, 5))
         for element in self.elements:
             ax.plot(
@@ -125,31 +121,8 @@ class Scene:
                 lw=3,
                 label=element.name,
             )
-        lines = [ax.plot([], [], color=ray.color, lw=1.5, alpha=0.8)[0] for ray in self.rays]
-        animated_paths = []
         for ray in self.rays:
-            total_x, total_y = [], []
-            for index in range(len(ray.path_x) - 1):
-                x1, x2 = ray.path_x[index], ray.path_x[index + 1]
-                y1, y2 = ray.path_y[index], ray.path_y[index + 1]
-                steps = max(2, int(np.hypot(x2 - x1, y2 - y1) * 20))
-                total_x.extend(np.linspace(x1, x2, steps)[:-1])
-                total_y.extend(np.linspace(y1, y2, steps)[:-1])
-            total_x.append(ray.path_x[-1])
-            total_y.append(ray.path_y[-1])
-            animated_paths.append((total_x, total_y))
-
-        def init():
-            for line in lines:
-                line.set_data([], [])
-            return lines
-
-        def update(frame):
-            for index, line in enumerate(lines):
-                x_data, y_data = animated_paths[index]
-                path_index = min(int((frame / num_frames) * len(x_data)), len(x_data))
-                line.set_data(x_data[:path_index], y_data[:path_index])
-            return lines
+            ax.plot(ray.path_x, ray.path_y, color=ray.color, lw=1.5, alpha=0.85)
 
         handles, labels = ax.get_legend_handles_labels()
         by_label = dict(zip(labels, handles))
@@ -161,19 +134,8 @@ class Scene:
         all_y = [element.p1[1] for element in self.elements] + [element.p2[1] for element in self.elements]
         ax.set_xlim(min(all_x) - 3, max(all_x) + 5)
         ax.set_ylim(min(all_y) - 3, max(all_y) + 3)
-        ani = animation.FuncAnimation(
-            fig, update, frames=num_frames + 1, init_func=init, blit=True, interval=20, repeat=True
-        )
-        return fig, ani
-
-    def show_native(self):
-        fig, ani = self.generate_animation()
-        plt.show()
-
-    def show_in_streamlit(self):
-        fig, ani = self.generate_animation()
-        st.components.v1.html(ani.to_jshtml(), height=550, scrolling=False)
-        plt.close(fig)
+        fig.tight_layout()
+        return fig
 
 
 def build_scene(type_scene, custom_params=None):
@@ -213,12 +175,61 @@ def build_scene(type_scene, custom_params=None):
     return scene
 
 
-if __name__ == "__main__" and RUNNING_IN_STREAMLIT:
+def get_scene_controls(scene_type):
+    if scene_type == "1. Lentille Unique (Focalisation)":
+        focal_length = st.slider("Distance focale", 1.0, 6.0, 3.0, 0.1, unit=" u")
+        return {"f_val": focal_length}
+    if scene_type == "2. Système à deux lentilles (Collimation)":
+        f1 = st.slider("Focale de L1", 0.5, 3.0, 1.5, 0.1, unit=" u")
+        f2 = st.slider("Focale de L2", 1.0, 6.0, 3.0, 0.1, unit=" u")
+        return {"f1": f1, "f2": f2}
+    if scene_type == "3. Miroir Plan incliné (Déviation)":
+        angle = st.slider("Inclinaison du miroir", 10, 80, 45, 1, unit=" deg")
+        return {"angle": angle}
+    mirror_angle = st.slider("Inclinaison du miroir", 10, 80, 45, 1, unit=" deg")
+    focal_length = st.slider("Distance focale", 0.5, 5.0, 2.0, 0.1, unit=" u")
+    return {"angle_m": mirror_angle, "f_lens": focal_length}
+
+
+def main():
+    st.set_page_config(page_title="Optique géométrique", page_icon="🔬", layout="wide")
+    st.title("Laboratoire d'optique géométrique")
+    st.caption("Explorez la propagation de rayons à travers des lentilles, miroirs et écrans.")
+
     examples = [
         "1. Lentille Unique (Focalisation)",
         "2. Système à deux lentilles (Collimation)",
         "3. Miroir Plan incliné (Déviation)",
         "4. Réflexion et Focalisation Combinée",
     ]
-    st.set_page_config(page_title="Simulation Geometrical Optics", layout="wide")
-    st.title("Exemples Adaptés du Dépôt `geometrical_optics`")
+    with st.sidebar:
+        st.header("Configuration")
+        scene_type = st.selectbox("Montage optique", examples)
+        params = get_scene_controls(scene_type)
+        st.divider()
+        st.caption("Les valeurs sont exprimées en unités arbitraires.")
+
+    scene = build_scene(scene_type, params)
+    plot_column, summary_column = st.columns([3, 1], gap="large")
+    with plot_column:
+        figure = scene.generate_figure()
+        st.pyplot(figure, use_container_width=True)
+        plt.close(figure)
+    with summary_column:
+        st.subheader("Montage")
+        st.metric("Rayons", len(scene.rays))
+        st.metric("Éléments", len(scene.elements))
+        st.write("**Composants**")
+        for element in scene.elements:
+            st.write(f"- {element.name}")
+
+    with st.expander("À propos de la simulation"):
+        st.write(
+            "Les rayons sont propagés jusqu'au prochain élément optique. "
+            "Les miroirs appliquent la loi de réflexion et les lentilles minces "
+            "modifient la direction selon leur distance focale."
+        )
+
+
+if __name__ == "__main__":
+    main()
