@@ -177,17 +177,17 @@ def build_scene(type_scene, custom_params=None):
 
 def get_scene_controls(scene_type):
     if scene_type == "1. Lentille Unique (Focalisation)":
-        focal_length = st.slider("Distance focale", 1.0, 6.0, 3.0, 0.1, unit=" u")
+        focal_length = st.slider("Distance focale (u)", 1.0, 6.0, 3.0, 0.1)
         return {"f_val": focal_length}
     if scene_type == "2. Système à deux lentilles (Collimation)":
-        f1 = st.slider("Focale de L1", 0.5, 3.0, 1.5, 0.1, unit=" u")
-        f2 = st.slider("Focale de L2", 1.0, 6.0, 3.0, 0.1, unit=" u")
+        f1 = st.slider("Focale de L1 (u)", 0.5, 3.0, 1.5, 0.1)
+        f2 = st.slider("Focale de L2 (u)", 1.0, 6.0, 3.0, 0.1)
         return {"f1": f1, "f2": f2}
     if scene_type == "3. Miroir Plan incliné (Déviation)":
-        angle = st.slider("Inclinaison du miroir", 10, 80, 45, 1, unit=" deg")
+        angle = st.slider("Inclinaison du miroir (degrés)", 10, 80, 45, 1)
         return {"angle": angle}
-    mirror_angle = st.slider("Inclinaison du miroir", 10, 80, 45, 1, unit=" deg")
-    focal_length = st.slider("Distance focale", 0.5, 5.0, 2.0, 0.1, unit=" u")
+    mirror_angle = st.slider("Inclinaison du miroir (degrés)", 10, 80, 45, 1)
+    focal_length = st.slider("Distance focale (u)", 0.5, 5.0, 2.0, 0.1)
     return {"angle_m": mirror_angle, "f_lens": focal_length}
 
 
