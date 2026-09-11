@@ -2,6 +2,8 @@
 
 Application Streamlit interactive qui visualise la propagation de rayons au sein
 de montages avec lentilles, miroirs et écrans.
+Le dépôt inclut aussi une page indépendante de cercle trigonométrique accessible
+depuis la navigation multi-pages de Streamlit.
 
 ## Lancer en local
 
@@ -9,6 +11,10 @@ de montages avec lentilles, miroirs et écrans.
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+Ensuite, ouvrez la barre latérale Streamlit pour naviguer entre :
+- la page principale d'optique géométrique ;
+- la page **Cercle Trigonométrique Réactif**.
 
 ## Déployer sur Streamlit Community Cloud
 
