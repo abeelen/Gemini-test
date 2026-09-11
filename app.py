@@ -5,6 +5,8 @@ import streamlit as st
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from ui_theme import apply_amns_theme
+
 
 class Ray:
     def __init__(self, x, y, vx, vy, color="orange"):
@@ -193,9 +195,20 @@ def get_scene_controls(scene_type):
 
 
 def main():
-    st.set_page_config(page_title="Optique géométrique", page_icon="🔬", layout="wide")
-    st.title("Laboratoire d'optique géométrique")
-    st.caption("Explorez la propagation de rayons à travers des lentilles, miroirs et écrans.")
+    st.set_page_config(page_title="AMNS Physique", page_icon="🔬", layout="wide")
+    apply_amns_theme()
+    st.title("Classes AMNS Physique — Laboratoire interactif")
+    st.caption("Page d'entrée : explorez les activités d'optique et de trigonométrie du cours.")
+    st.markdown(
+        """
+        <div class="amns-card">
+          <strong>Parcours AMNS Physique</strong><br>
+          Utilisez la navigation de gauche pour passer du laboratoire d'optique
+          au cercle trigonométrique, avec une présentation harmonisée entre pages.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     examples = [
         "1. Lentille Unique (Focalisation)",

@@ -1,8 +1,8 @@
-# Laboratoire d'optique géométrique
+# Classes AMNS Physique — laboratoire interactif
 
-Application Streamlit interactive qui visualise la propagation de rayons au sein
-de montages avec lentilles, miroirs et écrans.
-Le dépôt inclut aussi une page indépendante de cercle trigonométrique accessible
+Application Streamlit interactive pour les classes AMNS Physique, avec un
+laboratoire d'optique géométrique et une page de cercle trigonométrique.
+Le dépôt inclut une page indépendante de cercle trigonométrique accessible
 depuis la navigation multi-pages de Streamlit.
 
 ## Lancer en local

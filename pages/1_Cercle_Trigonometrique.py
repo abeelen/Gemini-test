@@ -5,7 +5,12 @@ import streamlit as st
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from ui_theme import apply_amns_theme
+
 st.set_page_config(page_title="Cercle Trigonométrique", layout="centered")
+apply_amns_theme()
+
+ANGLES_CLASSIQUES = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
 
 
 class CercleTrigonometriqueInteractif:
@@ -125,16 +130,34 @@ def initialiser_cercle():
     return CercleTrigonometriqueInteractif()
 
 
-cercle = initialiser_cercle()
+def initialiser_etat_angles():
+    st.session_state.setdefault("angle_classique", 45)
+    st.session_state.setdefault("angle_curseur", 45.0)
 
-st.title("📐 Cercle Trigonométrique Réactif")
+
+def appliquer_angle_classique():
+    st.session_state["angle_curseur"] = float(st.session_state["angle_classique"])
+
+
+cercle = initialiser_cercle()
+initialiser_etat_angles()
+
+st.title("📐 Cercle Trigonométrique — AMNS Physique")
+
+st.selectbox(
+    "Classical angles",
+    options=ANGLES_CLASSIQUES,
+    key="angle_classique",
+    on_change=appliquer_angle_classique,
+    help="Choisissez un angle remarquable pour positionner directement le rayon.",
+)
 
 angle_curseur = st.slider(
     "Ajuster l'angle (en degrés) :",
     min_value=0.0,
     max_value=360.0,
-    value=45.0,
     step=0.5,
+    key="angle_curseur",
 )
 
 figure_mise_a_jour = cercle.set_angle(angle_curseur)
