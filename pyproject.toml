@@ -1,0 +1,14 @@
+[project]
+name = "gemini-test"
+version = "0.1.0"
+description = "Application Streamlit interactive pour les classes AMNS Physique"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.38,<2",
+    "matplotlib>=3.8,<4",
+    "numpy>=1.26,<3",
+]
+
+[tool.uv]
+package = false

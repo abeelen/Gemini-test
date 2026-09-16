@@ -7,6 +7,17 @@ depuis la navigation multi-pages de Streamlit.
 
 ## Lancer en local
 
+Avec [uv](https://docs.astral.sh/uv/) (recommandé) :
+
+```bash
+uv run streamlit run app.py
+```
+
+`uv` crée automatiquement un environnement virtuel et installe les
+dépendances déclarées dans `pyproject.toml` avant de lancer l'application.
+
+Avec `pip` :
+
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
